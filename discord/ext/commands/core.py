@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
+
 from __future__ import annotations
 
 from typing import (
@@ -110,10 +111,7 @@ GroupT = TypeVar('GroupT', bound='Group')
 HookT = TypeVar('HookT', bound='Hook')
 ErrorT = TypeVar('ErrorT', bound='Error')
 
-if TYPE_CHECKING:
-    P = ParamSpec('P')
-else:
-    P = TypeVar('P')
+P = ParamSpec('P') if TYPE_CHECKING else TypeVar('P')
 
 
 def unwrap_function(function: Callable[..., Any]) -> Callable[..., Any]:
@@ -555,11 +553,10 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
             try:
                 argument = view.get_quoted_word()
             except ArgumentParsingError as exc:
-                if self._is_typing_optional(param.annotation):
-                    view.index = previous
-                    return None
-                else:
+                if not self._is_typing_optional(param.annotation):
                     raise exc
+                view.index = previous
+                return None
         view.previous = previous
 
         # type-checker fails to narrow argument
@@ -663,9 +660,7 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
 
         For example in commands ``?a b c test``, the root parent is ``a``.
         """
-        if not self.parent:
-            return None
-        return self.parents[-1]
+        return None if not self.parent else self.parents[-1]
 
     @property
     def qualified_name(self) -> str:
@@ -676,9 +671,8 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
         ``one two three``.
         """
 
-        parent = self.full_parent_name
-        if parent:
-            return parent + ' ' + self.name
+        if parent := self.full_parent_name:
+            return f'{parent} {self.name}'
         else:
             return self.name
 
@@ -740,11 +734,7 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
         # first, call the command local hook:
         cog = self.cog
         if self._before_invoke is not None:
-            # should be cog if @commands.before_invoke is used
-            instance = getattr(self._before_invoke, '__self__', cog)
-            # __self__ only exists for methods, not functions
-            # however, if @command.before_invoke is used, it will be a function
-            if instance:
+            if instance := getattr(self._before_invoke, '__self__', cog):
                 await self._before_invoke(instance, ctx)  # type: ignore
             else:
                 await self._before_invoke(ctx)  # type: ignore
@@ -763,8 +753,7 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
     async def call_after_hooks(self, ctx: Context) -> None:
         cog = self.cog
         if self._after_invoke is not None:
-            instance = getattr(self._after_invoke, '__self__', cog)
-            if instance:
+            if instance := getattr(self._after_invoke, '__self__', cog):
                 await self._after_invoke(instance, ctx)  # type: ignore
             else:
                 await self._after_invoke(ctx)  # type: ignore
@@ -785,8 +774,7 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
             current = dt.replace(tzinfo=datetime.timezone.utc).timestamp()
             bucket = self._buckets.get_bucket(ctx.message, current)
             if bucket is not None:
-                retry_after = bucket.update_rate_limit(current)
-                if retry_after:
+                if retry_after := bucket.update_rate_limit(current):
                     raise CommandOnCooldown(bucket, retry_after, self._buckets.type)  # type: ignore
 
     async def prepare(self, ctx: Context) -> None:

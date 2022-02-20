@@ -89,13 +89,10 @@ class View(ItemContainer[ViewItem], max_width=5, max_children=25):
     def __init_subclass__(cls, **kwargs) -> None:
         children: List[ItemCallbackType] = []
         for base in reversed(cls.__mro__):
-            for member in base.__dict__.values():
-                if (
+            children.extend(member for member in base.__dict__.values() if (
                     hasattr(member, '__discord_ui_model_type__')
                     and issubclass(member.__discord_ui_model_type__, ViewItem)
-                ):
-                    children.append(member)
-
+                ))
         if len(children) > 25:
             raise TypeError('View cannot have more than 25 children')
 
@@ -255,10 +252,9 @@ class ViewStore:
         return list(views.values())
 
     def __verify_integrity(self):
-        to_remove: List[Tuple[int, Optional[int], str]] = []
-        for (k, (view, _)) in self._views.items():
-            if view.is_finished():
-                to_remove.append(k)
+        to_remove: List[Tuple[int, Optional[int], str]] = [
+            k for (k, (view, _)) in self._views.items() if view.is_finished()
+        ]
 
         for k in to_remove:
             del self._views[k]

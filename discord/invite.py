@@ -374,8 +374,7 @@ class Invite(Hashable):
             PartialAppInfo(data=application, state=state) if application else None
         )
 
-        event = data.get('guild_scheduled_event')
-        if event:
+        if event := data.get('guild_scheduled_event'):
             from .guild_events import GuildEvent
             event = GuildEvent(guild=self.guild, state=state, data=event)
             self._event: Optional[GuildEvent] = event

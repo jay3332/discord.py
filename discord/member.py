@@ -484,10 +484,7 @@ class Member(discord.abc.Messageable, _UserTag):
         """
         result = []
         g = self.guild
-        for role_id in self._roles:
-            role = g.get_role(role_id)
-            if role:
-                result.append(role)
+        result.extend(role for role_id in self._roles if (role := g.get_role(role_id)))
         result.append(g.default_role)
         result.sort()
         return result
@@ -495,9 +492,7 @@ class Member(discord.abc.Messageable, _UserTag):
     @property
     def mention(self) -> str:
         """:class:`str`: Returns a string that allows you to mention the member."""
-        if self.nick:
-            return f'<@!{self._user.id}>'
-        return f'<@{self._user.id}>'
+        return f'<@!{self._user.id}>' if self.nick else f'<@{self._user.id}>'
 
     @property
     def display_name(self) -> str:
@@ -568,9 +563,7 @@ class Member(discord.abc.Messageable, _UserTag):
         """Optional[:class:`datetime.timedelta`]: How long the user is in timedout.
         Could be ``None`` if they are not currently in timeout.
         """
-        if self.timeout:
-            return utils.utcnow() - self.timeout
-        return None
+        return utils.utcnow() - self.timeout if self.timeout else None
 
     def mentioned_in(self, message: Message) -> bool:
         """Checks if the member is mentioned in the specified message.
@@ -618,8 +611,7 @@ class Member(discord.abc.Messageable, _UserTag):
             return None
 
         for role in reversed(self.roles):
-            display_icon = role.icon or role.unicode_emoji
-            if display_icon:
+            if display_icon := role.icon or role.unicode_emoji:
                 return display_icon
 
         return None  # Unnecessary but more readable

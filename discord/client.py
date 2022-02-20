@@ -291,9 +291,7 @@ class Client:
 
         .. versionadded:: 1.6
         """
-        if self.ws:
-            return self.ws.is_ratelimited()
-        return False
+        return self.ws.is_ratelimited() if self.ws else False
 
     @property
     def user(self) -> Optional[ClientUser]:
@@ -390,10 +388,9 @@ class Client:
 
     def dispatch(self, event: str, *args: Any, **kwargs: Any) -> None:
         _log.debug('Dispatching event %s', event)
-        method = 'on_' + event
+        method = f'on_{event}'
 
-        listeners = self._listeners.get(event)
-        if listeners:
+        if listeners := self._listeners.get(event):
             removed = []
             for i, (future, condition) in enumerate(listeners):
                 if future.cancelled():
@@ -407,7 +404,7 @@ class Client:
                     removed.append(i)
                 else:
                     if result:
-                        if len(args) == 0:
+                        if not args:
                             future.set_result(None)
                         elif len(args) == 1:
                             future.set_result(args[0])
@@ -1569,15 +1566,12 @@ class Client:
 
         if ch_type in (ChannelType.group, ChannelType.private):
             # the factory will be a DMChannel or GroupChannel here
-            channel = factory(me=self.user, data=data, state=self._connection) # type: ignore
-        else:
-            # the factory can't be a DMChannel or GroupChannel here
-            guild_id = int(data['guild_id']) # type: ignore
-            guild = self.get_guild(guild_id) or Object(id=guild_id)
+            return factory(me=self.user, data=data, state=self._connection)
+        # the factory can't be a DMChannel or GroupChannel here
+        guild_id = int(data['guild_id']) # type: ignore
+        guild = self.get_guild(guild_id) or Object(id=guild_id)
             # GuildChannels expect a Guild, we may be passing an Object
-            channel = factory(guild=guild, state=self._connection, data=data) # type: ignore
-
-        return channel
+        return factory(guild=guild, state=self._connection, data=data)
 
     async def fetch_webhook(self, webhook_id: int, /) -> Webhook:
         """|coro|
@@ -1665,8 +1659,7 @@ class Client:
             The channel that was created.
         """
         state = self._connection
-        found = state._get_private_channel_by_user(user.id)
-        if found:
+        if found := state._get_private_channel_by_user(user.id):
             return found
 
         data = await state.http.start_private_message(user.id)

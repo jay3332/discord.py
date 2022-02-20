@@ -166,10 +166,7 @@ class ItemContainer(ABC, Generic[I]):
 
     @property
     def _expires_at(self) -> Optional[float]:
-        if self.timeout:
-            return time.monotonic() + self.timeout
-
-        return None
+        return time.monotonic() + self.timeout if self.timeout else None
 
     @abstractmethod
     def _dispatch_timeout(self):

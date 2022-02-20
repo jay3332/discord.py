@@ -744,9 +744,7 @@ class BadUnionArgument(UserInputError):
             try:
                 return x.__name__
             except AttributeError:
-                if hasattr(x, '__origin__'):
-                    return repr(x)
-                return x.__class__.__name__
+                return repr(x) if hasattr(x, '__origin__') else x.__class__.__name__
 
         to_string = [_get_name(x) for x in converters]
         if len(to_string) > 2:
