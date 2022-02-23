@@ -249,13 +249,15 @@ class ApplicationCommandTree:
             The ID of the guild that this command will be in.
             Leave as ``None`` to make this command global.
         """
-        guild_id = guild_id or command.__application_command_guild_id__ or self._guild_id
-
-        if not guild_id:
-            self._global_commands.add(command)
-        else:
+        if (
+            guild_id := guild_id
+            or command.__application_command_guild_id__
+            or self._guild_id
+        ):
             self._guild_commands[guild_id].add(command)
 
+        else:
+            self._global_commands.add(command)
         command.__application_command_tree__ = self
 
     def add_commands(self, *commands: ApplicationCommandMeta, guild_id: int = MISSING) -> None:
@@ -983,7 +985,7 @@ class ApplicationCommandStore:
     ) -> Tuple[ApplicationCommand, List[ApplicationCommandInteractionDataOption]]:
         result = options
 
-        for option in options:
+        for option in result:
             if option['type'] < 3:
                 command = command.__application_command_children__[option['name']]
                 result = option.get('options', [])
