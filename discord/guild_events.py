@@ -333,8 +333,6 @@ class GuildEvent(Hashable):
             payload['scheduled_start_time'] = start_time.isoformat()
         if end_time is not MISSING:
             payload['scheduled_end_time'] = end_time.isoformat() if end_time is not None else end_time
-        if isinstance(location, str) and not self.end_time and not end_time:
-            raise InvalidArgument('end_time must be provided for events with external location type')
 
         if cover_image is not MISSING:
             payload['image'] = utils._bytes_to_base64_data(cover_image) if cover_image is not None else cover_image

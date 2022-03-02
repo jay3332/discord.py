@@ -304,7 +304,7 @@ class MessageFlags(BaseFlags):
         return 64
 
     @flag_value
-    def ephemeral(self):
+    def loading(self):
         """:class:`bool`: Returns ``True`` if the source message is an
         interaction response and the bot is "thinking".
         .. versionadded:: 2.0
@@ -312,13 +312,14 @@ class MessageFlags(BaseFlags):
         return 128
 
     @flag_value
-    def ephemeral(self):
+    def failed_to_mention_roles_in_thread(self):
         """:class:`bool`: Returns ``True`` if the source message failed
         to mention roles and add their members to the thread.
 
         .. versionadded:: 2.0
         """
         return 256
+
 
 @fill_with_flags()
 class PublicUserFlags(BaseFlags):
