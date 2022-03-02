@@ -167,8 +167,7 @@ class GuildEvent(Hashable):
         if self.creator_id:
             self.creator = state.get_user(self.creator_id)
         if not self.creator:
-            creator_data = data.get('creator')
-            if creator_data:
+            if creator_data := data.get('creator'):
                 self.creator = User(state=state, data=creator_data)
 
         self.user_count: Optional[int] = data.get('user_count')
@@ -184,10 +183,9 @@ class GuildEvent(Hashable):
         self._parse_metadata(metadata)
 
     def _parse_metadata(self, metadata):
-        if not metadata:
-            self.external_location: Optional[str] = None
-        else:
-            self.external_location: Optional[str] = metadata.get('location')
+        self.external_location: Optional[str] = (
+            None if not metadata else metadata.get('location')
+        )
 
     def __repr__(self):
         return f'<GuildEvent id={self.id} name={self.name} location={self.location} status={self.status} guild={self.guild}>'

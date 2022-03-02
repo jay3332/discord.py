@@ -55,9 +55,7 @@ class flag_value:
         ...
 
     def __get__(self, instance: Optional[BF], owner: Type[BF]) -> Any:
-        if instance is None:
-            return self
-        return instance._has_flag(self.flag)
+        return self if instance is None else instance._has_flag(self.flag)
 
     def __set__(self, instance: BF, value: bool) -> None:
         instance._set_flag(self.flag, value)
@@ -137,12 +135,10 @@ class BaseFlags:
         return (self.value & o) == o
 
     def _set_flag(self, o: int, toggle: bool) -> None:
-        if toggle is True:
+        if toggle:
             self.value |= o
-        elif toggle is False:
-            self.value &= ~o
         else:
-            raise TypeError(f'Value to set for {self.__class__.__name__} must be a bool.')
+            self.value &= ~o
 
 
 @fill_with_flags(inverted=True)
@@ -191,12 +187,10 @@ class SystemChannelFlags(BaseFlags):
         return (self.value & o) != o
 
     def _set_flag(self, o: int, toggle: bool) -> None:
-        if toggle is True:
+        if toggle:
             self.value &= ~o
-        elif toggle is False:
-            self.value |= o
         else:
-            raise TypeError('Value to set for SystemChannelFlags must be a bool.')
+            self.value |= o
 
     @flag_value
     def join_notifications(self):
