@@ -569,6 +569,14 @@ class Permissions(BaseFlags):
         """
         return 1 << 39
 
+    @make_permission_alias('start_embedded_activities')
+    def use_embedded_activities(self) -> int:
+        """:class:`bool`: Alias for ``start_embedded_activities``.
+
+        .. versionadded:: 2.0
+        """
+        return 1 << 39
+
     @flag_value
     def moderate_members(self) -> int:
         """:class:`bool`: Returns ``True`` if a user can timeout other users.
