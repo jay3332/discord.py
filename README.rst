@@ -16,12 +16,12 @@ A modern, easy to use, feature-rich, and async ready API wrapper for Discord wri
 This fork has halted maintenance.
 ---------------------------------
 
-Development of discord.py has now been "revived", see further details `here <https://gist.github.com/Rapptz/c4324f17a80c94776832430007ad40e6>`.
+Development of discord.py has now been "revived", see further details `here <https://gist.github.com/Rapptz/c4324f17a80c94776832430007ad40e6>`_.
 As such, there really isn't much motivation for this fork anymore.
 
-Practically everything that was implemented for this fork was also implemented for Danny's. Additionally, ext-commands compatibility (previously done using `discord-ext-compat <https://github.com/jay3332/discord-ext-compat>`) is planned.
+Practically everything that was implemented for this fork was also implemented for Danny's. Additionally, ext-commands compatibility (previously done using `discord-ext-compat <https://github.com/jay3332/discord-ext-compat>`_) is planned.
 Danny implemented application commands in a way that they are declared using functions. This fork implements it in a way that uses classes: they were much cleaner, readable, and reduced unnecessary repetition with names. Additionally, they just seemed more declarative than it's function-based counterpart.
-Although I'm not the biggest fan of a function-based implementation, see `here <https://github.com/jay3332/discord.py/#why-not-class-based>` as to why Danny went with it.
+Although I'm not the biggest fan of a function-based implementation, see `here <https://github.com/jay3332/discord.py/#why-not-class-based>`_ as to why Danny went with it.
 
 Welcome to my fork of discord.py
 --------------------------------
