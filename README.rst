@@ -13,8 +13,20 @@ discord.py
 
 A modern, easy to use, feature-rich, and async ready API wrapper for Discord written in Python.
 
+This fork has halted maintenance.
+---------------------------------
+
+Development of discord.py has now been "revived", see further details `here <https://gist.github.com/Rapptz/c4324f17a80c94776832430007ad40e6>`.
+As such, there really isn't much motivation for this fork anymore.
+
+Practically everything that was implemented for this fork was also implemented for Danny's. Additionally, ext-commands compatibility (previously done using `discord-ext-compat <https://github.com/jay3332/discord-ext-compat>`) is planned.
+Danny implemented application commands in a way that they are declared using functions. This fork implements it in a way that uses classes: they were much cleaner, readable, and reduced unnecessary repetition with names. Additionally, they just seemed more declarative than it's function-based counterpart.
+Although I'm not the biggest fan of a function-based implementation, see `here <https://github.com/jay3332/discord.py/#why-not-class-based>` as to why Danny went with it.
+
 Welcome to my fork of discord.py
 --------------------------------
+
+Note: The following was written **before** Danny announced the "resurrection" of discord.py
 
 It was originally made to implement Danny's
 `slash command DSL <https://gist.github.com/Rapptz/2a7a299aa075427357e9b8a970747c2c>`_ (The class based version),
@@ -165,3 +177,13 @@ Links
 - `Documentation <https://discordpy.readthedocs.io/en/latest/index.html>`_
 - `Official Discord Server <https://discord.gg/r3sSKJJ>`_
 - `Discord API <https://discord.gg/discord-api>`_
+
+Why not class-based?
+--------------------
+This fork **does** implement a class-based application commands implementation. However, Danny chose to not implement it this way on discord.py itself:
+
+   "I think this is too hung up on syntactic features (i.e. this is mostly focused on "syntax looks" rather than functionality). There's actually a reason that classes aren't abused like this in most Python libraries and that's because their composability is too restricted. For example, classes can't compose very well if they override one functionality without an explicit call to super and making many mixins which infects the MRO chain. Every caller in the MRO chain then depends on calling super or else the chain ends, sometimes unexpectedly prematurely.
+
+   I've messed with class based commands, but it doesn't actually work very well. To give a concrete example, consider checks. Checks are nice and reusable, but if every command was a class where would you shove the check in? In traditional systems you'd have a check method you override with your logic but in this system you now have to maintain every function call. Alternatively you can stack decorators that do this.
+
+   I've also messed with returning a class sentinel value (e.g. TextResponse in your example) in many of my old bots before d.py existed. That system doesn't work either because of the concept of follow ups. Sometimes you want to send more than one message at a specific point and sometimes that message depends on user input from an asynchronous system. Things get complicated if you had to return a value to signal whether to return a response or not. It's just not good dev UX."
